@@ -18,101 +18,43 @@
   $: filteredRecipes = recipes.filter((recipe) =>
     recipe[1].toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  let deleteRecipe = async (recipeId) => {
-    try {
-      await axios.delete(`http://83.150.236.193:8000/recipes/${recipeId}`);
-      // Po usunięciu przepisu, odśwież listę przepisów
-      const response = await axios.get("http://83.150.236.193:8000/recipes");
-      recipes = response.data;
-    } catch (error) {
-      console.error("Błąd podczas usuwania przepisu:", error);
-    }
-  };
 </script>
 
-<main>
-  <h1>Przepisy</h1>
+<main class="max-w-4xl mx-auto p-4">
+  <h1 class="text-4xl font-bold text-center text-pink-600 mb-8">Przepisy</h1>
 
   <input
     type="text"
     bind:value={searchTerm}
     placeholder="Wyszukaj przepis..."
+    class="w-full px-4 py-2 mb-8 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-400"
   />
 
-  <ul>
+  <ul class="space-y-8">
     {#each filteredRecipes as recipe}
-      <li>
-        <h3>{recipe[1]}</h3>
-        <p>Czas przygotowania: {recipe[2]} minut</p>
-        <img src={recipe[3]} alt={recipe[1]} />
-        <p>{recipe[4]}</p>
-        <p>Instrukcja: {recipe[5]}</p>
-        <p>Składniki: {recipe[6]}</p>
-        <a href={recipe[7]} target="_blank">Źródło</a>
-        <button on:click={() => deleteRecipe(recipe[0])}>Usuń przepis</button>
+      <li class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-2xl font-semibold text-pink-600 mb-4">{recipe[1]}</h3>
+        <p class="text-gray-600 mb-2">Czas przygotowania: {recipe[2]} minut</p>
+        <img
+          src={recipe[3]}
+          alt={recipe[1]}
+          class="w-full h-auto rounded-md mb-4"
+        />
+        <p class="text-gray-800 mb-2">{recipe[4]}</p>
+        <p class="text-gray-800 mb-2">Instrukcja: {recipe[5]}</p>
+        <p class="text-gray-800 mb-2">Składniki: {recipe[6]}</p>
+        <a
+          href={recipe[7]}
+          target="_blank"
+          class="text-teal-500 hover:underline">Źródło</a
+        >
+        <button
+          on:click={() => deleteRecipe(recipe[0])}
+          class="mt-4 px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-400"
+        >
+          Usuń przepis
+        </button>
       </li>
     {/each}
   </ul>
 </main>
-
-<style>
-  :root {
-    --primary-color: #ff6b6b;
-    --secondary-color: #4ecdc4;
-    --text-color: #333;
-    --background-color: #f7fff7;
-  }
-
-  main {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  h1 {
-    color: var(--primary-color);
-    text-align: center;
-  }
-
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-
-  li {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-
-  li h3 {
-    margin-top: 0;
-    color: var(--primary-color);
-  }
-
-  li img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    margin-bottom: 10px;
-  }
-
-  li p {
-    margin-bottom: 10px;
-  }
-
-  li a {
-    color: var(--secondary-color);
-    text-decoration: none;
-  }
-  input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-</style>

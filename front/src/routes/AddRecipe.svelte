@@ -36,98 +36,96 @@
   }
 </script>
 
-<main>
-  <h1>Dodaj nowy przepis</h1>
+<main class="container mx-auto px-4">
+  <h1 class="text-4xl font-bold mb-8 text-center">Dodaj nowy przepis</h1>
 
-  <form on:submit|preventDefault={addRecipe}>
-    <label>
-      Nazwa:
-      <input type="text" bind:value={newRecipe.nazwa} required />
-    </label>
+  <form class="space-y-6 max-w-md mx-auto" on:submit|preventDefault={addRecipe}>
+    <div class="input-field">
+      <label class="block text-lg font-medium mb-2">
+        Nazwa:
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="text"
+          bind:value={newRecipe.nazwa}
+          required
+        />
+      </label>
+    </div>
 
-    <label>
-      Czas przygotowania (minuty):
-      <input type="number" bind:value={newRecipe.czas_przygotowania} />
-    </label>
+    <div class="input-field">
+      <label class="block text-lg font-medium mb-2">
+        Czas przygotowania (minuty):
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="number"
+          bind:value={newRecipe.czas_przygotowania}
+        />
+      </label>
+    </div>
 
-    <label>
-      URL zdjęcia:
-      <input type="text" bind:value={newRecipe.zdjecie_url} />
-    </label>
+    <div class="input-field">
+      <label class="block text-lg font-medium mb-2">
+        URL zdjęcia:
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="text"
+          bind:value={newRecipe.zdjecie_url}
+        />
+      </label>
+    </div>
 
-    <label>
-      Opis:
-      <textarea bind:value={newRecipe.opis}></textarea>
-    </label>
+    <div class="input-field">
+      <label class="block text-lg font-medium mb-2">
+        Opis:
+        <textarea
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          bind:value={newRecipe.opis}
+        ></textarea>
+      </label>
+    </div>
 
-    <label>
-      Instrukcja:
-      <textarea bind:value={newRecipe.instrukcja}></textarea>
-    </label>
+    <div class="input-field">
+      <label class="block text-lg font-medium mb-2">
+        Instrukcja:
+        <textarea
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          bind:value={newRecipe.instrukcja}
+        ></textarea>
+      </label>
+    </div>
 
-    <label>
-      Składniki:
-      <textarea bind:value={newRecipe.skladniki}></textarea>
-    </label>
+    <div class="input-field">
+      <label class="block text-lg font-medium mb-2">
+        Składniki:
+        <textarea
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          bind:value={newRecipe.skladniki}
+        ></textarea>
+      </label>
+    </div>
 
-    <label>
-      URL źródła:
-      <input type="text" bind:value={newRecipe.zrodlo_url} />
-    </label>
+    <div class="input-field">
+      <label class="block text-lg font-medium mb-2">
+        URL źródła:
+        <input
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="text"
+          bind:value={newRecipe.zrodlo_url}
+        />
+      </label>
+    </div>
 
-    <button type="submit">Dodaj przepis</button>
+    <div class="text-center">
+      <button
+        class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+        type="submit">Dodaj przepis</button
+      >
+    </div>
   </form>
 </main>
 
 <style>
-  :root {
-    --primary-color: #ff6b6b;
-    --secondary-color: #4ecdc4;
-    --text-color: #333;
-    --background-color: #f7fff7;
-  }
-
-  main {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  h1 {
-    color: var(--primary-color);
-    text-align: center;
-  }
-
-  form {
-    display: grid;
-    gap: 10px;
-  }
-
-  label {
-    display: block;
-    font-weight: bold;
-  }
-
-  input,
-  textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-
-  button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-  }
-
-  button:hover {
-    background-color: #ff4f4f;
+  .input-field {
+    max-width: 100%;
   }
 </style>

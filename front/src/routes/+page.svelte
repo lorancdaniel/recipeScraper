@@ -11,62 +11,60 @@
   }
 </script>
 
-<main>
-  <nav>
-    <ul>
+<main class="container mx-auto px-4">
+  <nav
+    class="bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg rounded-lg"
+  >
+    <ul class="flex justify-center space-x-8 py-6">
       <li>
-        <a href="#" on:click|preventDefault={() => changeView("SearchRecipes")}
-          >Search Recipes</a
+        <a
+          href="#"
+          class="text-lg font-semibold hover:text-white transition duration-300 ease-in-out rounded-lg px-4 py-2 hover:bg-red-600"
+          on:click|preventDefault={() => changeView("SearchRecipes")}
         >
+          Search Recipes
+        </a>
       </li>
       <li>
-        <a href="#" on:click|preventDefault={() => changeView("Recipes")}
-          >Recipes</a
+        <a
+          href="#"
+          class="text-lg font-semibold hover:text-white transition duration-300 ease-in-out rounded-lg px-4 py-2 hover:bg-red-600"
+          on:click|preventDefault={() => changeView("Recipes")}
         >
+          Recipes
+        </a>
       </li>
       <li>
-        <a href="#" on:click|preventDefault={() => changeView("AddRecipe")}
-          >Add Recipe</a
+        <a
+          href="#"
+          class="text-lg font-semibold hover:text-white transition duration-300 ease-in-out rounded-lg px-4 py-2 hover:bg-red-600"
+          on:click|preventDefault={() => changeView("AddRecipe")}
         >
+          Add Recipe
+        </a>
       </li>
     </ul>
   </nav>
 
-  {#key currentView}
-    {#if currentView === "SearchRecipes"}
-      <SearchRecipes />
-    {:else if currentView === "Recipes"}
-      <Recipes />
-    {:else if currentView === "AddRecipe"}
-      <AddRecipe />
-    {/if}
-  {/key}
+  <div class="mt-12">
+    {#key currentView}
+      {#if currentView === "SearchRecipes"}
+        <div
+          class="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition duration-300 ease-in-out"
+        >
+          <SearchRecipes />
+        </div>
+      {:else if currentView === "Recipes"}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Recipes />
+        </div>
+      {:else if currentView === "AddRecipe"}
+        <div
+          class="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition duration-300 ease-in-out"
+        >
+          <AddRecipe />
+        </div>
+      {/if}
+    {/key}
+  </div>
 </main>
-
-<style>
-  nav {
-    background-color: #f2f2f2;
-    padding: 10px;
-  }
-
-  nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  nav ul li {
-    display: inline;
-    margin-right: 10px;
-  }
-
-  nav ul li a {
-    text-decoration: none;
-    color: #333;
-    padding: 5px;
-  }
-
-  nav ul li a:hover {
-    background-color: #ddd;
-  }
-</style>
