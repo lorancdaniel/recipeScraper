@@ -209,7 +209,7 @@
           <ul
             class="list-disc list-inside text-sm text-gray-700 space-y-2 mb-4 mx-auto max-w-md"
           >
-            {#each recipesWithIngredients[0].ingredients as ingredient}
+            {#each selectedRecipe.ingredients as ingredient}
               <li>{ingredient}</li>
             {/each}
           </ul>
