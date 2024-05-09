@@ -72,26 +72,33 @@
   }
 </script>
 
-<main class="container mx-auto px-4">
-  <h1 class="text-4xl font-bold mb-8 text-center">Dodaj nowy przepis</h1>
-  <form class="space-y-6 max-w-md mx-auto" on:submit|preventDefault={addRecipe}>
+<main class="container mx-auto px-4 py-8 overflow-y-auto">
+  <h1 class="text-4xl font-bold mb-8 text-center text-pink-600">
+    Dodaj nowy przepis
+  </h1>
+  <form
+    class="max-w-2xl mx-auto space-y-6"
+    on:submit|preventDefault={addRecipe}
+  >
     {#each Object.entries(newRecipe) as [field, value], index (field)}
       <div class="input-field">
-        <label class="block text-lg font-medium mb-2">
+        <label class="block text-lg font-medium mb-2 text-gray-700">
           {field === "czas_przygotowania"
             ? "Czas przygotowania (minuty)"
-            : field.charAt(0).toUpperCase() + field.slice(1)}: {#if field === "opis" || field === "instrukcja" || field === "skladniki"}
+            : field.charAt(0).toUpperCase() + field.slice(1)}:
+          {#if field === "opis" || field === "instrukcja" || field === "skladniki"}
             <textarea
-              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-400 transition duration-300"
               bind:value={newRecipe[field]}
               required
               pattern={field === "skladniki"
                 ? skladnikiPattern
                 : textFieldPattern}
+              rows="4"
             ></textarea>
           {:else}
             <input
-              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-400 transition duration-300"
               inputmode={field === "czas_przygotowania" ? "number" : "text"}
               bind:value={newRecipe[field]}
               required={index !== 2 && index !== 6}
@@ -120,15 +127,9 @@
     </p>
     <div class="text-center">
       <button
-        class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+        class="bg-gradient-to-r from-pink-500 to-pink-600 text-white px-6 py-3 rounded-md hover:bg-pink-700 transition duration-300"
         type="submit">Dodaj przepis</button
       >
     </div>
   </form>
 </main>
-
-<style>
-  .input-field {
-    max-width: 100%;
-  }
-</style>

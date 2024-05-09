@@ -58,7 +58,7 @@
   }
 </script>
 
-<main class="container mx-auto px-4 py-8">
+<main class="container mx-auto px-4 py-8 overflow-y-auto">
   <h1 class="text-4xl font-bold text-center text-pink-600 mb-8">Przepisy</h1>
   <input
     type="text"
