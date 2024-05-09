@@ -23,5 +23,6 @@ export default {
     skeleton({
       themes: { preset: ["crimson"] },
     }),
+    require("tailwind-scrollbar"),
   ],
 };

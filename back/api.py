@@ -146,12 +146,19 @@ async def scrape_recipe(keyword: str = Body(...)):
                 soup = BeautifulSoup(response.content, "html.parser")
                 body_content = soup.find("body").get_text()
 
+                # Scrapowanie zdjęć i ich znaczników alt
+                images = {}
+                for img in soup.find_all("img"):
+                    img_src = img.get("src")
+                    img_alt = img.get("alt", "")
+                    images[img_src] = img_alt
+
                 # Sprawdzenie, czy tekst jest przepisem kulinarnym
                 if not await is_recipe(keyword):
                     raise HTTPException(status_code=400, detail="Podany tekst nie jest przepisem kulinarnym. Proszę zmienić tekst lub jego format.")
 
                 # Formatowanie przepisu
-                formattedRecipe = await recipeGenerator(body_content)
+                formattedRecipe = await recipeGenerator(body_content, images)
                 formattedRecipe = json.loads(formattedRecipe)
 
                 # Dodanie zrodlo_url do formattedRecipe
