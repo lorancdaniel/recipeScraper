@@ -18,16 +18,18 @@
   ];
 </script>
 
-<main class="container mx-auto px-4 min-h-screen flex flex-col">
+<main class="container mx-auto p-4 min-h-screen flex flex-col">
   <nav
-    class="bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg rounded-lg fixed top-2 left-20 right-20 z-10"
+    class="bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg rounded-lg fixed top-2 left-4 right-4 z-10 sm:left-8 sm:right-8 md:left-12 md:right-12 lg:left-20 lg:right-20 xl:left-40 xl:right-40"
   >
-    <ul class="flex justify-center space-x-8 py-6">
+    <ul
+      class="flex flex-wrap justify-center space-x-2 sm:space-x-4 py-2 sm:py-4"
+    >
       {#each views as view}
-        <li>
+        <li class="mb-2 sm:mb-0">
           <a
             href="#"
-            class="text-lg font-semibold hover:text-white transition duration-300 ease-in-out rounded-lg px-4 py-2 hover:bg-red-600"
+            class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-semibold hover:text-white transition duration-300 ease-in-out rounded-lg px-2 sm:px-4 py-1 sm:py-2 hover:bg-red-600"
             on:click|preventDefault={() => changeView(view.name)}
           >
             {view.label}
@@ -40,7 +42,8 @@
     <div class="mt-32">
       {#key currentView}
         <div
-          class="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition duration-300 ease-in-out"
+          class="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition duration-300 ease-in-out
+                 lg:p-12 xl:p-16"
         >
           {#each views as view}
             {#if currentView === view.name}

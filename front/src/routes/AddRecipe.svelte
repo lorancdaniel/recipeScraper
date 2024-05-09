@@ -72,7 +72,7 @@
   }
 </script>
 
-<main class="container mx-auto px-4 py-8 overflow-y-auto">
+<main class="container mx-auto p-4 py-8 overflow-y-auto">
   <h1 class="text-4xl font-bold mb-8 text-center text-pink-600">
     Dodaj nowy przepis
   </h1>
@@ -128,8 +128,10 @@
     <div class="text-center">
       <button
         class="bg-gradient-to-r from-pink-500 to-pink-600 text-white px-6 py-3 rounded-md hover:bg-pink-700 transition duration-300"
-        type="submit">Dodaj przepis</button
+        type="submit"
       >
+        Dodaj przepis
+      </button>
     </div>
   </form>
 </main>

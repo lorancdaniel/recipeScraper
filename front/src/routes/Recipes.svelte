@@ -58,7 +58,7 @@
   }
 </script>
 
-<main class="container mx-auto px-4 py-8 overflow-y-auto">
+<main class="container mx-auto px-4 py-8">
   <h1 class="text-4xl font-bold text-center text-pink-600 mb-8">Przepisy</h1>
   <input
     type="text"
@@ -66,17 +66,17 @@
     placeholder="Wyszukaj przepis..."
     class="w-full px-4 py-2 mb-8 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-400"
   />
-  <div class="flex justify-center mb-8">
+  <div class="flex flex-wrap justify-center mb-8">
     {#each "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("") as letter}
       <button
-        class="mx-1 px-2 py-1 bg-pink-200 text-pink-800 rounded-full hover:bg-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 transition-colors duration-300"
+        class="mx-1 px-1 py-1 bg-pink-200 text-pink-800 rounded-full hover:bg-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 transition-colors duration-300 sm:mx-1 sm:px-3 sm:py-2"
         on:click={() => selectLetter(letter)}
       >
         {letter}
       </button>
     {/each}
     <button
-      class="ml-4 px-2 py-1 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors duration-300"
+      class=" bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors duration-300 sm:ml-6 sm:px-3 sm:py-2"
       on:click={() => selectLetter("")}
     >
       Wszystkie
