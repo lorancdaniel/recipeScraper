@@ -19,7 +19,7 @@
     skladniki: true,
     zrodlo_url: true,
   };
-  const textFieldPattern = "[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\\s]+";
+  const textFieldPattern = "[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\\s,.!?:;()-]+";
   const skladnikiPattern = "[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\\s,]+";
   async function addRecipe() {
     if (validateForm()) {
@@ -85,8 +85,7 @@
         <label class="block text-lg font-medium mb-2 text-gray-700">
           {field === "czas_przygotowania"
             ? "Czas przygotowania (minuty)"
-            : field.charAt(0).toUpperCase() + field.slice(1)}:
-          {#if field === "opis" || field === "instrukcja" || field === "skladniki"}
+            : field.charAt(0).toUpperCase() + field.slice(1)}: {#if field === "opis" || field === "instrukcja" || field === "skladniki"}
             <textarea
               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-400 transition duration-300"
               bind:value={newRecipe[field]}
@@ -116,7 +115,7 @@
                 ? "Czas przygotowania musi być liczbą większą od zera."
                 : field === "zdjecie_url" || field === "zrodlo_url"
                   ? "Nieprawidłowy format URL."
-                  : `${field.charAt(0).toUpperCase() + field.slice(1)} może zawierać tylko litery alfabetu (w tym polskie znaki), spacje${field !== "skladniki" ? " i numery" : ", numery i przecinki"}.`}
+                  : `${field.charAt(0).toUpperCase() + field.slice(1)} może zawierać litery alfabetu (w tym polskie znaki), spacje, numery oraz znaki interpunkcyjne.`}
             </p>
           {/if}
         </label>
