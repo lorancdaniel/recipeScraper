@@ -1,81 +1,123 @@
+import re
+import sys
+
 import requests
 from bs4 import BeautifulSoup
-from sqlalchemy import create_engine, Column, Integer, String, Text
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 
-# Połączenie z bazą danych
-engine = create_engine('postgresql://postgres:8513@localhost/recipeDatabase')
-Session = sessionmaker(bind=engine)
-Base = declarative_base()
+from database.models import Base, Przepis
+from database.session import Session, engine
 
-# Definicja modelu tabeli przepisy
-class Przepis(Base):
-    __tablename__ = 'przepisy'
-    id = Column(Integer, primary_key=True)
-    nazwa = Column(String(255), nullable=False)
-    czas_przygotowania = Column(Integer)
-    zdjecie_url = Column(String(255))
-    opis = Column(Text)
-    instrukcja = Column(Text)
-    skladniki = Column(Text)
-    zrodlo_url = Column(String(255))
+DEFAULT_URL = "https://aniagotuje.pl/przepis/chleb-na-zakwasie"
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; recipeScraper/1.0)"}
+TIMEOUT = 15  # sekundy
 
-# Tworzenie tabeli w bazie danych (jeśli nie istnieje)
-Base.metadata.create_all(engine)
+# Czas w formacie ISO 8601, np. "PT45M", "PT1H30M", "P1DT2H"
+DURATION_RE = re.compile(
+    r"P(?:(?P<days>\d+)D)?"
+    r"(?:T(?:(?P<hours>\d+)H)?(?:(?P<minutes>\d+)M)?(?:(?P<seconds>\d+(?:\.\d+)?)S)?)?"
+)
 
-url = "https://aniagotuje.pl/przepis/chleb-na-zakwasie"
-print(url)
-try:
-    response = requests.get(url)
+
+def parse_duration(value):
+    """Zamienia czas ISO 8601 (np. "PT1H30M") albo samą liczbę minut na liczbę minut."""
+    value = (value or "").strip().upper()
+    if value.isdigit():
+        return int(value)
+
+    match = DURATION_RE.fullmatch(value)
+    if not match or value in ("P", "PT"):
+        return None
+
+    parts = {k: float(v) for k, v in match.groupdict(default="0").items()}
+    return int(parts["days"] * 24 * 60 + parts["hours"] * 60 + parts["minutes"] + parts["seconds"] / 60)
+
+
+def text_of(element, separator=" "):
+    return element.get_text(separator, strip=True) if element else None
+
+
+def fetch_page(url):
+    response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
     response.raise_for_status()  # Sprawdzenie statusu odpowiedzi
-except requests.exceptions.RequestException as e:
-    print("Błąd podczas pobierania strony:", e)
-    exit(1)
+    return response.content
 
-try:
-    soup = BeautifulSoup(response.content, "html.parser")
-    recipe = soup.find("article", {"itemtype": "https://schema.org/Recipe"})
 
-    if recipe:
-        title = recipe.find("h1", itemprop="name")
-        title = title.text.strip() if title else None
+def parse_recipe(html, source_url):
+    """Wyciąga dane przepisu z mikrodanych schema.org. Zwraca słownik albo None."""
+    soup = BeautifulSoup(html, "html.parser")
+    recipe = soup.find(attrs={"itemtype": re.compile(r"schema\.org/Recipe$")})
+    if recipe is None:
+        return None
 
-        ingredients = recipe.find("ul", class_="recipe-ing-list")
-        ingredient_list = [li.span.text.strip() for li in ingredients.find_all("li")] if ingredients else []
+    ingredients = recipe.find("ul", class_="recipe-ing-list")
+    ingredient_list = []
+    if ingredients:
+        for li in ingredients.find_all("li"):
+            item = text_of(li.span or li)
+            if item:
+                ingredient_list.append(item)
 
-        # Dodatkowe pola do pobrania (dostosuj według struktury strony)
-        preparation_time = recipe.find("meta", itemprop="prepTime")
-        preparation_time = int(preparation_time["content"].split("T")[0]) if preparation_time else None
+    prep_time = recipe.find("meta", itemprop="prepTime")
+    image = recipe.find("meta", itemprop="image") or recipe.find("img", itemprop="image")
 
-        image_url = recipe.find("meta", itemprop="image")
-        image_url = image_url["content"] if image_url else None
+    return {
+        "nazwa": text_of(recipe.find("h1", itemprop="name")),
+        "czas_przygotowania": parse_duration(prep_time.get("content")) if prep_time else None,
+        "zdjecie_url": (image.get("content") or image.get("src")) if image else None,
+        "opis": text_of(recipe.find("div", class_="article-intro"), "\n"),
+        "instrukcja": text_of(recipe.find("div", itemprop="recipeInstructions"), "\n"),
+        "skladniki": ", ".join(ingredient_list),
+        "zrodlo_url": source_url,
+    }
 
-        description = recipe.find("div", class_="article-intro")
-        description = description.text.strip() if description else None
 
-        instructions = recipe.find("div", itemprop="recipeInstructions")
-        instructions = instructions.text.strip() if instructions else None
+def save_recipe(data):
+    """Zapisuje przepis. Jeśli przepis z tego adresu już jest w bazie, aktualizuje go.
 
-        source_url = url
+    Zwraca True, gdy dodano nowy przepis, i False przy aktualizacji.
+    """
+    with Session() as session, session.begin():
+        przepis = session.scalars(
+            select(Przepis).filter_by(zrodlo_url=data["zrodlo_url"])
+        ).first()
+        created = przepis is None
+        if created:
+            przepis = Przepis()
+            session.add(przepis)
+        for field, value in data.items():
+            setattr(przepis, field, value)
+    return created
 
-        # Tworzenie obiektu przepisu
-        przepis = Przepis(
-            nazwa=title,
-            czas_przygotowania=preparation_time,
-            zdjecie_url=image_url,
-            opis=description,
-            instrukcja=instructions,
-            skladniki=", ".join(ingredient_list),
-            zrodlo_url=source_url
-        )
 
-        # Dodawanie przepisu do sesji
-        session = Session()
-        session.add(przepis)
-        session.commit()
-        session.close()
-    else:
+def main(url=DEFAULT_URL):
+    print(url)
+    try:
+        html = fetch_page(url)
+    except requests.exceptions.RequestException as e:
+        print("Błąd podczas pobierania strony:", e)
+        return 1
+
+    data = parse_recipe(html, url)
+    if data is None:
         print("Nie znaleziono przepisu na stronie.")
+        return 1
+    if not data["nazwa"]:
+        print("Nie znaleziono nazwy przepisu – pomijam zapis.")
+        return 1
 
-except (AttributeError, KeyError) as e:
-    print("Błąd podczas przetwarzania przepisu:", e)
+    try:
+        # Tworzenie tabeli w bazie danych (jeśli nie istnieje)
+        Base.metadata.create_all(engine)
+        created = save_recipe(data)
+    except SQLAlchemyError as e:
+        print("Błąd podczas zapisu do bazy danych:", e)
+        return 1
+
+    print(f"Przepis '{data['nazwa']}' został {'dodany' if created else 'zaktualizowany'}.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(*sys.argv[1:2]))
